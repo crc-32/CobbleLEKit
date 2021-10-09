@@ -1,3 +1,3 @@
 # CobbleLEKit
 
-A description of this package.
+iOS BLE code for talking to Pebbles
