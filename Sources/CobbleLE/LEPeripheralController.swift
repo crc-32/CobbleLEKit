@@ -24,7 +24,7 @@ public class LEPeripheralController: NSObject, CBPeripheralManagerDelegate {
     private var characteristicWriteCallbacks = Dictionary<CBUUID, ([CBATTRequest])->()>()
     private let characteristicWriteCBSemaphore = DispatchSemaphore(value: 1)
     
-    override init() {
+    public override init() {
         peripheralManager = CBPeripheralManager();
         super.init()
         peripheralManager.delegate = self
@@ -73,7 +73,7 @@ public class LEPeripheralController: NSObject, CBPeripheralManagerDelegate {
         }
     }
     
-    func addService(service: CBMutableService, didAdd: @escaping (Error?)->()) {
+    public func addService(service: CBMutableService, didAdd: @escaping (Error?)->()) {
         queue.async {
             self.pendingServicesSemaphore.wait()
             self.pendingServices[service.uuid] = didAdd
@@ -82,14 +82,14 @@ public class LEPeripheralController: NSObject, CBPeripheralManagerDelegate {
         peripheralManager.add(service)
     }
     
-    func setCharacteristicCallback(uuid: CBUUID, onWrite: @escaping ([CBATTRequest])->()) {
+    public func setCharacteristicCallback(uuid: CBUUID, onWrite: @escaping ([CBATTRequest])->()) {
         queue.async {
             self.characteristicWriteCBSemaphore.wait()
             self.characteristicWriteCallbacks[uuid] = onWrite
             self.characteristicWriteCBSemaphore.signal()
         }
     }
-    func setCharacteristicCallback(uuid: CBUUID, onRead: @escaping (CBATTRequest)->()) {
+    public func setCharacteristicCallback(uuid: CBUUID, onRead: @escaping (CBATTRequest)->()) {
         queue.async {
             self.characteristicReadCBSemaphore.wait()
             self.characteristicReadCallbacks[uuid] = onRead

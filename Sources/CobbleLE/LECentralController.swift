@@ -9,14 +9,14 @@ import Foundation
 import CoreBluetooth
 
 public class LECentralController: NSObject, CBCentralManagerDelegate {
-    var centralManager: CBCentralManager
+    public var centralManager: CBCentralManager
     private let queue = DispatchQueue.global(qos: .utility)
     
     private var discoveryCallback: ((CBPeripheral) -> ())?
     
     private var canScan = false;
     
-    override init() {
+    public override init() {
         centralManager = CBCentralManager(delegate: nil, queue: nil)
         super.init()
         centralManager.delegate = self
@@ -57,14 +57,14 @@ public class LECentralController: NSObject, CBCentralManagerDelegate {
         print(peripheral.name! + " disconnected.")
     }
     
-    func startScan(discoveredDevice: @escaping (CBPeripheral) -> ()) {
+    public func startScan(discoveredDevice: @escaping (CBPeripheral) -> ()) {
         if canScan {
             discoveryCallback = discoveredDevice
             centralManager.scanForPeripherals(withServices: [LEConstants.pairServiceUUID], options: nil)
         }
     }
     
-    func stopScan() {
+    public func stopScan() {
         discoveryCallback = nil
         if centralManager.isScanning {
             centralManager.stopScan()

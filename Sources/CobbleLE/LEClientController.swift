@@ -14,7 +14,7 @@ public class LEClientController: NSObject, CBPeripheralDelegate {
     private let centralManager: CBCentralManager
     private let stateCallback: (ConnectivityStatus) -> ()
     
-    init(peripheral: CBPeripheral, centralManager: CBCentralManager, stateCallback: @escaping (ConnectivityStatus) -> ()) {
+    public init(peripheral: CBPeripheral, centralManager: CBCentralManager, stateCallback: @escaping (ConnectivityStatus) -> ()) {
         self.peripheral = peripheral
         self.centralManager = centralManager
         self.stateCallback = stateCallback
@@ -22,11 +22,11 @@ public class LEClientController: NSObject, CBPeripheralDelegate {
         peripheral.delegate = self
     }
     
-    func connect() {
+    public func connect() {
         centralManager.connect(peripheral)
     }
     
-    func disconnect() {
+    public func disconnect() {
         centralManager.cancelPeripheralConnection(peripheral)
     }
     
@@ -158,7 +158,7 @@ public class LEClientController: NSObject, CBPeripheralDelegate {
         }
     }
     
-    func deviceConnectivity() {
+    private func deviceConnectivity() {
         let pairService = peripheral.services?.first(where: { $0.uuid == LEConstants.pairServiceUUID })
         let connCharacteristic = pairService!.characteristics!.first(where: { $0.uuid == LEConstants.connectivityUUID })
         peripheral.discoverDescriptors(for: connCharacteristic!)

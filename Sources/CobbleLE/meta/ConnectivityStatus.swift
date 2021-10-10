@@ -7,15 +7,15 @@
 
 import Foundation
 public class ConnectivityStatus: CustomStringConvertible {
-    let connected: Bool
-    let paired: Bool
-    let encrypted: Bool
-    let hasBondedGateway: Bool
-    let supportsPinningWithoutSlaveSecurity: Bool
-    let hasRemoteAttemptedToUseStalePairing: Bool
-    let pairingErrorCode: UInt8
+    public let connected: Bool
+    public let paired: Bool
+    public let encrypted: Bool
+    public let hasBondedGateway: Bool
+    public let supportsPinningWithoutSlaveSecurity: Bool
+    public let hasRemoteAttemptedToUseStalePairing: Bool
+    public let pairingErrorCode: UInt8
     
-    init(characteristicValue: Data) {
+    public init(characteristicValue: Data) {
         let flags = characteristicValue[0]
         connected = flags & 0b1 > 0
         paired = flags & 0b10 > 0
