@@ -8,7 +8,7 @@
 import Foundation
 import CoreBluetooth
 
-class LECentralController: NSObject, CBCentralManagerDelegate {
+public class LECentralController: NSObject, CBCentralManagerDelegate {
     var centralManager: CBCentralManager
     private let queue = DispatchQueue.global(qos: .utility)
     
@@ -21,7 +21,7 @@ class LECentralController: NSObject, CBCentralManagerDelegate {
         super.init()
         centralManager.delegate = self
     }
-    func centralManagerDidUpdateState(_ central: CBCentralManager) {
+    public func centralManagerDidUpdateState(_ central: CBCentralManager) {
         switch central.state {
         case .unknown:
             print("unknown")
@@ -43,17 +43,17 @@ class LECentralController: NSObject, CBCentralManagerDelegate {
         }
     }
     
-    func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
+    public func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
         print(peripheral.name! + " connected.")
         peripheral.discoverServices(nil)
         
     }
-    func centralManager(_ central: CBCentralManager, didFailToConnect peripheral: CBPeripheral, error: Error?) {
+    public func centralManager(_ central: CBCentralManager, didFailToConnect peripheral: CBPeripheral, error: Error?) {
         if error != nil {
             print("Failed to connect: " + error!.localizedDescription)
         }
     }
-    func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
+    public func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
         print(peripheral.name! + " disconnected.")
     }
     
@@ -71,7 +71,7 @@ class LECentralController: NSObject, CBCentralManagerDelegate {
         }
     }
     
-    func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
+    public func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
         discoveryCallback?(peripheral)
     }
 }

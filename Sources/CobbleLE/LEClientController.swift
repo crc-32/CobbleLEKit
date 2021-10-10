@@ -8,7 +8,7 @@
 import Foundation
 import CoreBluetooth
 
-class LEClientController: NSObject, CBPeripheralDelegate {
+public class LEClientController: NSObject, CBPeripheralDelegate {
     private var running = false
     private let peripheral: CBPeripheral
     private let centralManager: CBCentralManager
@@ -30,7 +30,7 @@ class LEClientController: NSObject, CBPeripheralDelegate {
         centralManager.cancelPeripheralConnection(peripheral)
     }
     
-    func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: Error?) {
+    public func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: Error?) {
         if error != nil {
             print("Failed to discover services: " + error!.localizedDescription)
             return
@@ -41,7 +41,7 @@ class LEClientController: NSObject, CBPeripheralDelegate {
         peripheral.discoverCharacteristics(nil, for: pairService!)
     }
     
-    func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService, error: Error?) {
+    public func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService, error: Error?) {
         if (error != nil) {
             print("Error discovering characteristics: " + error!.localizedDescription)
             return
@@ -63,7 +63,7 @@ class LEClientController: NSObject, CBPeripheralDelegate {
         }
     }
     
-    func peripheral(_ peripheral: CBPeripheral, didDiscoverDescriptorsFor characteristic: CBCharacteristic, error: Error?) {
+    public func peripheral(_ peripheral: CBPeripheral, didDiscoverDescriptorsFor characteristic: CBCharacteristic, error: Error?) {
         if (error != nil) {
             print("Error discovering descriptors for char " + characteristic.uuid.uuidString + ": " + error!.localizedDescription)
             return
@@ -83,14 +83,14 @@ class LEClientController: NSObject, CBPeripheralDelegate {
         }
     }
     
-    func peripheral(_ peripheral: CBPeripheral, didWriteValueFor descriptor: CBDescriptor, error: Error?) {
+    public func peripheral(_ peripheral: CBPeripheral, didWriteValueFor descriptor: CBDescriptor, error: Error?) {
         if (error != nil) {
             print("Error writing desc value for char " + descriptor.characteristic!.uuid.uuidString + ": " + error!.localizedDescription)
             return
         }
     }
     
-    func peripheral(_ peripheral: CBPeripheral, didUpdateNotificationStateFor characteristic: CBCharacteristic, error: Error?) {
+    public func peripheral(_ peripheral: CBPeripheral, didUpdateNotificationStateFor characteristic: CBCharacteristic, error: Error?) {
         if (error != nil) {
             print("Error updating notif state for char " + characteristic.uuid.uuidString + ": " + error!.localizedDescription)
             return
@@ -109,7 +109,7 @@ class LEClientController: NSObject, CBPeripheralDelegate {
         }
     }
     
-    func peripheral(_ peripheral: CBPeripheral, didWriteValueFor characteristic: CBCharacteristic, error: Error?) {
+    public func peripheral(_ peripheral: CBPeripheral, didWriteValueFor characteristic: CBCharacteristic, error: Error?) {
         if (error != nil) {
             print("Error writing to char " + characteristic.uuid.uuidString + ": " + error!.localizedDescription)
             return
@@ -125,7 +125,7 @@ class LEClientController: NSObject, CBPeripheralDelegate {
         }
     }
     
-    func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
+    public func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
         if (error != nil) {
             print("Error while listening to char " + characteristic.uuid.uuidString + ": " + error!.localizedDescription)
             return

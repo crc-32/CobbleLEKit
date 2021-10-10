@@ -6,7 +6,7 @@
 //
 
 import Foundation
-class ConnectivityStatus: CustomStringConvertible {
+public class ConnectivityStatus: CustomStringConvertible {
     let connected: Bool
     let paired: Bool
     let encrypted: Bool

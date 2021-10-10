@@ -7,7 +7,7 @@
 
 import Foundation
 import CoreBluetooth
-struct LEConstants {
+public struct LEConstants {
     static let pairServiceUUID = CBUUID(string: "0000fed9-0000-1000-8000-00805f9b34fb")
     static let connectivityUUID = CBUUID(string: "00000001-328E-0FBB-C642-1AA6699BDADA")
     static let pairTriggerUUID = CBUUID(string: "00000002-328E-0FBB-C642-1AA6699BDADA")

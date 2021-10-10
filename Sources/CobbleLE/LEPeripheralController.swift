@@ -8,7 +8,7 @@
 import Foundation
 import CoreBluetooth
 
-class LEPeripheralController: NSObject, CBPeripheralManagerDelegate {
+public class LEPeripheralController: NSObject, CBPeripheralManagerDelegate {
     private var peripheralManager: CBPeripheralManager
     
     private let queue = DispatchQueue.global(qos: .utility)
@@ -30,7 +30,7 @@ class LEPeripheralController: NSObject, CBPeripheralManagerDelegate {
         peripheralManager.delegate = self
     }
     
-    func peripheralManagerDidUpdateState(_ peripheral: CBPeripheralManager) {
+    public func peripheralManagerDidUpdateState(_ peripheral: CBPeripheralManager) {
         if peripheral.state == .poweredOn {
             let appLaunchService = CBMutableService(type: LEConstants.appLaunchServiceUUID, primary: true)
             let appLaunchCharacteristic = CBMutableCharacteristic(type: LEConstants.appLaunchCharUUID, properties: CBCharacteristicProperties.read, value: nil, permissions: [.readable, .readEncryptionRequired])
@@ -46,7 +46,7 @@ class LEPeripheralController: NSObject, CBPeripheralManagerDelegate {
         }
     }
     
-    func peripheralManager(_ peripheral: CBPeripheralManager, didReceiveRead request: CBATTRequest) {
+    public func peripheralManager(_ peripheral: CBPeripheralManager, didReceiveRead request: CBATTRequest) {
         ioReadQueue.async {
             self.characteristicReadCBSemaphore.wait()
             let cb = self.characteristicReadCallbacks[request.characteristic.uuid]
@@ -54,7 +54,7 @@ class LEPeripheralController: NSObject, CBPeripheralManagerDelegate {
             cb?(request)
         }
     }
-    func peripheralManager(_ peripheral: CBPeripheralManager, didReceiveWrite requests: [CBATTRequest]) {
+    public func peripheralManager(_ peripheral: CBPeripheralManager, didReceiveWrite requests: [CBATTRequest]) {
         ioWriteQueue.async {
             self.characteristicWriteCBSemaphore.wait()
             let cb = self.characteristicWriteCallbacks[requests[0].characteristic.uuid]
@@ -63,7 +63,7 @@ class LEPeripheralController: NSObject, CBPeripheralManagerDelegate {
         }
     }
     
-    func peripheralManager(_ peripheral: CBPeripheralManager, didAdd service: CBService, error: Error?) {
+    public func peripheralManager(_ peripheral: CBPeripheralManager, didAdd service: CBService, error: Error?) {
         queue.async {
             self.pendingServicesSemaphore.wait()
             let cb = self.pendingServices[service.uuid]
