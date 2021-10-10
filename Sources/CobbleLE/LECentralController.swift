@@ -12,7 +12,7 @@ public class LECentralController: NSObject, CBCentralManagerDelegate {
     public var centralManager: CBCentralManager
     private let queue = DispatchQueue.global(qos: .utility)
     
-    private var discoveryCallback: ((CBPeripheral) -> ())?
+    private var discoveryCallback: ((CBPeripheral, Int) -> ())?
     
     private var canScan = false;
     
@@ -57,7 +57,7 @@ public class LECentralController: NSObject, CBCentralManagerDelegate {
         print(peripheral.name! + " disconnected.")
     }
     
-    public func startScan(discoveredDevice: @escaping (CBPeripheral) -> ()) {
+    public func startScan(discoveredDevice: @escaping (CBPeripheral, Int) -> ()) {
         if canScan {
             discoveryCallback = discoveredDevice
             centralManager.scanForPeripherals(withServices: [LEConstants.pairServiceUUID], options: nil)
@@ -72,6 +72,6 @@ public class LECentralController: NSObject, CBCentralManagerDelegate {
     }
     
     public func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
-        discoveryCallback?(peripheral)
+        discoveryCallback?(peripheral, Int(truncating: RSSI))
     }
 }

@@ -39,8 +39,6 @@ public class LEPeripheralController: NSObject, CBPeripheralManagerDelegate {
             addService(service: appLaunchService) {error in
                 if error != nil {
                     print("Error adding applaunch service: " + error!.localizedDescription)
-                }else {
-                    print("Added applaunch")
                 }
             }
         }
