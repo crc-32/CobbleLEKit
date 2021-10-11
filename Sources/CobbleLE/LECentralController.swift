@@ -13,6 +13,7 @@ public class LECentralController: NSObject, CBCentralManagerDelegate {
     private let queue = DispatchQueue.global(qos: .utility)
     
     private var discoveryCallback: ((CBPeripheral, Int) -> ())?
+    public var ancsUpdateCallback: ((CBPeripheral) -> ())?
     
     private var canScan = false;
     
@@ -62,6 +63,10 @@ public class LECentralController: NSObject, CBCentralManagerDelegate {
             discoveryCallback = discoveredDevice
             centralManager.scanForPeripherals(withServices: [LEConstants.pairServiceUUID], options: [CBCentralManagerScanOptionAllowDuplicatesKey: NSNumber(value: true)])
         }
+    }
+    
+    public func centralManager(_ central: CBCentralManager, didUpdateANCSAuthorizationFor peripheral: CBPeripheral) {
+        ancsUpdateCallback?(peripheral)
     }
     
     public func stopScan() {
