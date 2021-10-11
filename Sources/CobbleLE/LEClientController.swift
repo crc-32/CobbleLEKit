@@ -22,8 +22,14 @@ public class LEClientController: NSObject, CBPeripheralDelegate {
         peripheral.delegate = self
     }
     
-    public func connect() {
-        centralManager.connect(peripheral)
+    public func connect(requireANCS: Bool = false) {
+        if #available(iOS 13.0, *), requireANCS {
+            centralManager.connect(peripheral, options: [
+                CBConnectPeripheralOptionRequiresANCS: true
+            ])
+        } else {
+            centralManager.connect(peripheral)
+        }
     }
     
     public func disconnect() {

@@ -61,7 +61,9 @@ public class LECentralController: NSObject, CBCentralManagerDelegate {
     public func startScan(discoveredDevice: @escaping (CBPeripheral, Int) -> ()) {
         if canScan {
             discoveryCallback = discoveredDevice
-            centralManager.scanForPeripherals(withServices: [LEConstants.pairServiceUUID], options: [CBCentralManagerScanOptionAllowDuplicatesKey: NSNumber(value: true)])
+            centralManager.scanForPeripherals(withServices: [LEConstants.pairServiceUUID], options: [
+                CBCentralManagerScanOptionAllowDuplicatesKey: NSNumber(value: true)
+            ])
         }
     }
     
