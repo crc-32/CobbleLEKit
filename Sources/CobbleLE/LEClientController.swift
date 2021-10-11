@@ -145,7 +145,7 @@ public class LEClientController: NSObject, CBPeripheralDelegate {
                     let pairTrigger = characteristic.service?.characteristics?.first(where: { $0.uuid == LEConstants.pairTriggerUUID })
                     if pairTrigger!.properties.contains(.write) {
                         print("Writing pairing trigger")
-                        peripheral.writeValue(Data([0xFF, status.supportsPinningWithoutSlaveSecurity ? 0xFF : 0x00, 0x00, 0x00, 0x00, 0x00]), for: pairTrigger!, type: .withResponse)
+                        peripheral.writeValue(Data([true, status.supportsPinningWithoutSlaveSecurity, false, false, false, false].toBytes()), for: pairTrigger!, type: .withResponse)
                     }else {
                         print("Reading pairing trigger")
                         let _ = peripheral.readValue(for: pairTrigger!)
