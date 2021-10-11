@@ -143,13 +143,16 @@ public class LEClientController: NSObject, CBPeripheralDelegate {
                 }else {
                     print("Not yet paired, pairing...")
                     let pairTrigger = characteristic.service?.characteristics?.first(where: { $0.uuid == LEConstants.pairTriggerUUID })
-                    if pairTrigger!.properties.contains(.write) {
+                    /*if pairTrigger!.properties.contains(.write) {
                         print("Writing pairing trigger")
                         peripheral.writeValue(Data([true, status.supportsPinningWithoutSlaveSecurity, false, false, false, false].toBytes()), for: pairTrigger!, type: .withResponse)
                     }else {
                         print("Reading pairing trigger")
                         let _ = peripheral.readValue(for: pairTrigger!)
-                    }
+                    }*/
+                    // The above is the right way, but the pebble apparently doesn't want that and neither does the iOS app apparently
+                    print("Reading pairing trigger")
+                    peripheral.readValue(for: pairTrigger!)
                 }
             }
             break
