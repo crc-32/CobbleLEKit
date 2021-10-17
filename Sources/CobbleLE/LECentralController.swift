@@ -12,7 +12,7 @@ public class LECentralController: NSObject, CBCentralManagerDelegate {
     public var centralManager: CBCentralManager
     private let queue = DispatchQueue.global(qos: .utility)
     
-    private var discoveryCallback: ((CBPeripheral, Int) -> ())?
+    private var discoveryCallback: ((CBPeripheral, Int, [UInt8]?) -> ())?
     public var ancsUpdateCallback: ((CBPeripheral) -> ())?
     
     private var canScan = false;
@@ -58,7 +58,7 @@ public class LECentralController: NSObject, CBCentralManagerDelegate {
         print(peripheral.name! + " disconnected.")
     }
     
-    public func startScan(discoveredDevice: @escaping (CBPeripheral, Int) -> ()) {
+    public func startScan(discoveredDevice: @escaping (CBPeripheral, Int, [UInt8]?) -> ()) {
         if canScan {
             discoveryCallback = discoveredDevice
             centralManager.scanForPeripherals(withServices: [LEConstants.pairServiceUUID], options: [
@@ -79,6 +79,13 @@ public class LECentralController: NSObject, CBCentralManagerDelegate {
     }
     
     public func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
-        discoveryCallback?(peripheral, Int(truncating: RSSI))
+        let i = advertisementData.index(forKey: CBAdvertisementDataManufacturerDataKey)
+        let advData: [UInt8]?
+        if i == nil {
+            advData = nil
+        }else {
+            advData = (advertisementData[i!].value as! [UInt8])
+        }
+        discoveryCallback?(peripheral, Int(truncating: RSSI), advData)
     }
 }
