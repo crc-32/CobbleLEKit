@@ -34,79 +34,51 @@ public struct GAPMeta {
     }
     
     private let mandatoryDataSize = (UInt16.bitWidth/8)+(UInt8.bitWidth/8)+((UInt8.bitWidth/8)*12)
-    private let fullDataSize = 32
     
     public init (data: [UInt8]) {
         var seek = 0
-        var seekComplete = false
-        while !seekComplete && data.count - seek > 1 {
-            let length = UInt8(littleEndian: data[seek])
-            seek += UInt8.bitWidth/8
+        if data.count - seek >= mandatoryDataSize {
+            vendor = Int16(UInt16(littleEndian: data.withUnsafeBufferPointer {
+                (($0.baseAddress!+seek).withMemoryRebound(to: UInt16.self, capacity: 1) {$0})
+            }.pointee))
+            seek += UInt16.bitWidth/8
             
-            let type = UInt8(littleEndian: data[seek])
+            payloadType = data[seek]
             seek += UInt8.bitWidth/8
-            
-            if type != 0xFF { // Skip until we hit the manufacturer data
-                seek = seek + (Int(length) - 1)
-            }else {
-                seekComplete = true
-            }
-        }
-        if !seekComplete { // No manufacturer data present
-            print("GAPMeta: No manufacturer specific data present in GAP")
+            serialNumber = String(bytes: data[seek...seek+12], encoding: .utf8) ?? "??"
+            seek += serialNumber.count
+        }else {
+            print("GAPMeta: Mandatory manufacturer specific data malformed")
             vendor = -1
             payloadType = 0
             serialNumber = "??"
+        }
+        
+        if data.count - seek >= 6 {
+            hardwarePlatform = data[seek]
+            seek += UInt8.bitWidth/8
+            
+            color = data[seek]
+            seek += UInt8.bitWidth/8
+            
+            major = data[seek]
+            seek += UInt8.bitWidth/8
+            
+            minor = data[seek]
+            seek += UInt8.bitWidth/8
+            
+            patch = data[seek]
+            seek += UInt8.bitWidth/8
+            
+            flags = data[seek]
+            seek += UInt8.bitWidth/8
+        }else {
             hardwarePlatform = nil
             color = nil
             major = nil
             minor = nil
             patch = nil
             flags = nil
-        } else {
-            if data.count - seek >= mandatoryDataSize {
-                vendor = Int16(UInt16(littleEndian: data.withUnsafeBufferPointer {
-                    (($0.baseAddress!+seek).withMemoryRebound(to: UInt16.self, capacity: 1) {$0})
-                }.pointee))
-                seek += UInt16.bitWidth/8
-                
-                payloadType = data[seek]
-                seek += UInt8.bitWidth/8
-                serialNumber = String(bytes: data[seek...seek+12], encoding: .utf8) ?? "??"
-                seek += serialNumber.count
-            }else {
-                print("GAPMeta: Mandatory manufacturer specific data malformed")
-                vendor = -1
-                payloadType = 0
-                serialNumber = "??"
-            }
-            
-            if data.count - seek >= 6 {
-                hardwarePlatform = data[seek]
-                seek += UInt8.bitWidth/8
-                
-                color = data[seek]
-                seek += UInt8.bitWidth/8
-                
-                major = data[seek]
-                seek += UInt8.bitWidth/8
-                
-                minor = data[seek]
-                seek += UInt8.bitWidth/8
-                
-                patch = data[seek]
-                seek += UInt8.bitWidth/8
-                
-                flags = data[seek]
-                seek += UInt8.bitWidth/8
-            }else {
-                hardwarePlatform = nil
-                color = nil
-                major = nil
-                minor = nil
-                patch = nil
-                flags = nil
-            }
         }
     }
 }
