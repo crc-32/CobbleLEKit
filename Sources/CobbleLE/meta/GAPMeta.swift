@@ -45,7 +45,7 @@ public struct GAPMeta {
             
             payloadType = data[seek]
             seek += UInt8.bitWidth/8
-            serialNumber = String(bytes: data[seek...seek+12], encoding: .utf8) ?? "??"
+            serialNumber = String(bytes: data[seek...seek+11], encoding: .utf8) ?? "????????????"
             seek += serialNumber.count
         }else {
             print("GAPMeta: Mandatory manufacturer specific data malformed")
