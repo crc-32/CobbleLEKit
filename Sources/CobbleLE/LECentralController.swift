@@ -14,6 +14,7 @@ public class LECentralController: NSObject, CBCentralManagerDelegate {
     
     private var discoveryCallback: ((CBPeripheral, Int, [UInt8]?) -> ())?
     public var ancsUpdateCallback: ((CBPeripheral) -> ())?
+    public var stateUpdateCallback: ((CBCentralManager) -> ())?
     
     private var canScan = false;
     
@@ -42,6 +43,7 @@ public class LECentralController: NSObject, CBCentralManagerDelegate {
         default:
             print("unknown")
         }
+        stateUpdateCallback?(central)
     }
     
     public func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
@@ -84,7 +86,7 @@ public class LECentralController: NSObject, CBCentralManagerDelegate {
         if i == nil {
             advData = nil
         }else {
-            advData = (advertisementData[i!].value as! [UInt8])
+            advData = [UInt8](advertisementData[i!].value as! Data)
         }
         discoveryCallback?(peripheral, Int(truncating: RSSI), advData)
     }
