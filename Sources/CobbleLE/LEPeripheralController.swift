@@ -24,6 +24,8 @@ public class LEPeripheralController: NSObject, CBPeripheralManagerDelegate {
     private var characteristicWriteCallbacks = Dictionary<CBUUID, ([CBATTRequest])->()>()
     private let characteristicWriteCBSemaphore = DispatchSemaphore(value: 1)
     
+    private let characteristicUpdateSemaphore = DispatchSemaphore(value: 1)
+    
     public override init() {
         peripheralManager = CBPeripheralManager();
         super.init()
@@ -92,6 +94,15 @@ public class LEPeripheralController: NSObject, CBPeripheralManagerDelegate {
             self.characteristicReadCBSemaphore.wait()
             self.characteristicReadCallbacks[uuid] = onRead
             self.characteristicReadCBSemaphore.signal()
+        }
+    }
+    
+    public func updateValue(value: Data, forChar: CBMutableCharacteristic, onUpdate: @escaping ()->()) {
+        ioWriteQueue.async {
+            self.characteristicUpdateSemaphore.wait()
+            self.peripheralManager.updateValue(value, for: forChar, onSubscribedCentrals: nil)
+            self.characteristicUpdateSemaphore.signal()
+            onUpdate()
         }
     }
 }

@@ -20,3 +20,29 @@ extension Array where Element == Bool {
         return bArr
     }
 }
+
+extension Array {
+    func chunked(into size: Int) -> [[Element]] {
+        return stride(from: 0, to: count, by: size).map {
+            Array(self[$0 ..< Swift.min($0 + size, count)])
+        }
+    }
+}
+
+extension ContiguousBytes {
+    func object<T>() -> T { withUnsafeBytes { $0.load(as: T.self) } }
+}
+
+extension Data {
+    func subdata<R: RangeExpression>(in range: R) -> Self where R.Bound == Index {
+        subdata(in: range.relative(to: self) )
+    }
+    func object<T>(at offset: Int) -> T { subdata(in: offset...).object() }
+}
+
+extension Numeric {
+    var data: Data {
+        var source = self
+        return Data(bytes: &source, count: MemoryLayout<Self>.size)
+    }
+}

@@ -15,4 +15,7 @@ public struct LEConstants {
     
     public static let appLaunchServiceUUID = CBUUID(string: "20000000-328E-0FBB-C642-1AA6699BDADA")
     public static let appLaunchCharUUID = CBUUID(string: "20000001-328E-0FBB-C642-1AA6699BDADA")
+    
+    public static let maxRXWindow: UInt8 = 25
+    public static let maxTXWindow: UInt8 = 25
 }
