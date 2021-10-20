@@ -44,8 +44,11 @@ class PPoGATTService: NSObject, StreamDelegate {
     private let packetReadSemaphore = DispatchSemaphore(value: 1)
     private let dataUpdateSemaphore = DispatchSemaphore(value: 1)
     
-    init(serverController: LEPeripheralController) {
+    private let packetHandler: ([UInt8]) -> ()
+    
+    init(serverController: LEPeripheralController, packetHandler: @escaping ([UInt8]) -> ()) {
         self.serverController = serverController
+        self.packetHandler = packetHandler
         super.init()
         let service = CBMutableService(type: deviceServerUUID, primary: true)
         let metaCharacteristic = CBMutableCharacteristic(type: metaCharacteristicUUID, properties: .read, value: Data(metaResponse), permissions: .readEncryptionRequired)
@@ -78,6 +81,7 @@ class PPoGATTService: NSObject, StreamDelegate {
                             if packet.sequence == remoteSeq {
                                 sendAck(sequence: packet.sequence)
                             }
+                            packetHandler([UInt8](request.value!))
                         case .ack:
                             for i in 0...packet.sequence {
                                 let ind = ackPending.index(forKey: i)

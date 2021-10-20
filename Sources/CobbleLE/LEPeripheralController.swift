@@ -33,17 +33,7 @@ public class LEPeripheralController: NSObject, CBPeripheralManagerDelegate {
     }
     
     public func peripheralManagerDidUpdateState(_ peripheral: CBPeripheralManager) {
-        if peripheral.state == .poweredOn {
-            let appLaunchService = CBMutableService(type: LEConstants.appLaunchServiceUUID, primary: true)
-            let appLaunchCharacteristic = CBMutableCharacteristic(type: LEConstants.appLaunchCharUUID, properties: CBCharacteristicProperties.read, value: nil, permissions: [.readable, .readEncryptionRequired])
-            appLaunchService.characteristics = [appLaunchCharacteristic]
-            
-            addService(service: appLaunchService) {error in
-                if error != nil {
-                    print("Error adding applaunch service: " + error!.localizedDescription)
-                }
-            }
-        }
+        
     }
     
     public func peripheralManager(_ peripheral: CBPeripheralManager, didReceiveRead request: CBATTRequest) {
