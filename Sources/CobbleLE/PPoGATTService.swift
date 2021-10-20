@@ -46,7 +46,7 @@ public class PPoGATTService: NSObject, StreamDelegate {
     
     private let packetHandler: ([UInt8]) -> ()
     
-    init(serverController: LEPeripheralController, packetHandler: @escaping ([UInt8]) -> ()) {
+    public init(serverController: LEPeripheralController, packetHandler: @escaping ([UInt8]) -> ()) {
         self.serverController = serverController
         self.packetHandler = packetHandler
         super.init()
