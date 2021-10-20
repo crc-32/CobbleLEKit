@@ -28,8 +28,10 @@ public class LEPeripheralController: NSObject, CBPeripheralManagerDelegate {
     
     public var ready: Bool { return peripheralManager.state == .poweredOn }
     private let readyGroup = DispatchGroup()
+    private var waitingForReady = false
     
     public override init() {
+        waitingForReady = true
         readyGroup.enter()
         peripheralManager = CBPeripheralManager();
         super.init()
@@ -39,15 +41,25 @@ public class LEPeripheralController: NSObject, CBPeripheralManagerDelegate {
     public func peripheralManagerDidUpdateState(_ peripheral: CBPeripheralManager) {
         switch peripheral.state {
         case .poweredOn:
-            readyGroup.leave()
+            if waitingForReady {
+                readyGroup.leave()
+                waitingForReady = false
+            }
         default:
-            break
+            if !waitingForReady {
+                waitingForReady = true
+                readyGroup.enter()
+            }
         }
     }
     
     public func waitForReady(onReady: @escaping () -> ()) {
-        readyGroup.notify(queue: queue) {
+        if ready {
             onReady()
+        } else {
+            readyGroup.notify(queue: queue) {
+                onReady()
+            }
         }
     }
     
