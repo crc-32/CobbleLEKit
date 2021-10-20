@@ -26,14 +26,29 @@ public class LEPeripheralController: NSObject, CBPeripheralManagerDelegate {
     
     private let characteristicUpdateSemaphore = DispatchSemaphore(value: 1)
     
+    public var ready: Bool { return peripheralManager.state == .poweredOn }
+    private let readyGroup = DispatchGroup()
+    
     public override init() {
+        readyGroup.enter()
         peripheralManager = CBPeripheralManager();
         super.init()
         peripheralManager.delegate = self
     }
     
     public func peripheralManagerDidUpdateState(_ peripheral: CBPeripheralManager) {
-        
+        switch peripheral.state {
+        case .poweredOn:
+            readyGroup.leave()
+        default:
+            break
+        }
+    }
+    
+    public func waitForReady(onReady: @escaping () -> ()) {
+        readyGroup.notify(queue: queue) {
+            onReady()
+        }
     }
     
     public func peripheralManager(_ peripheral: CBPeripheralManager, didReceiveRead request: CBATTRequest) {
