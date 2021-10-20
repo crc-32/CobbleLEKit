@@ -81,7 +81,7 @@ public class PPoGATTService: NSObject, StreamDelegate {
                             if packet.sequence == remoteSeq {
                                 sendAck(sequence: packet.sequence)
                             }
-                            packetHandler([UInt8](request.value!))
+                            packetHandler([UInt8](packet.data))
                         case .ack:
                             for i in 0...packet.sequence {
                                 let ind = ackPending.index(forKey: i)
