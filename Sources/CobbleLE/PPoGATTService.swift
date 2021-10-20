@@ -8,7 +8,7 @@
 import Foundation
 import CoreBluetooth
 
-class PPoGATTService: NSObject, StreamDelegate {
+public class PPoGATTService: NSObject, StreamDelegate {
     static let maxMTU = 185
     
     let serverController: LEPeripheralController
