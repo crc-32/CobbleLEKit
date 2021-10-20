@@ -59,6 +59,8 @@ public class PPoGATTService: NSObject, StreamDelegate {
         serverController.addService(service: service) { error in
             if error != nil {
                 print("GATTService: Error adding service: \(error!.localizedDescription)")
+            }else {
+                print("GATTService: Added services")
             }
         }
         serverController.setCharacteristicCallback(uuid: metaCharacteristicUUID, onRead: self.onMetaRead)

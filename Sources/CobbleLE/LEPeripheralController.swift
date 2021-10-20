@@ -39,9 +39,9 @@ public class LEPeripheralController: NSObject, CBPeripheralManagerDelegate {
     }
     
     public func peripheralManagerDidUpdateState(_ peripheral: CBPeripheralManager) {
-        print("Peripheral: \(peripheral.state)")
         switch peripheral.state {
         case .poweredOn:
+            print("Peripheral: Powered on")
             if waitingForReady {
                 readyGroup.leave()
                 waitingForReady = false
