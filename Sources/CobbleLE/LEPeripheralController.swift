@@ -123,4 +123,12 @@ public class LEPeripheralController: NSObject, CBPeripheralManagerDelegate {
             onUpdate()
         }
     }
+    
+    public func removeAllServices() {
+        peripheralManager.removeAllServices()
+    }
+    
+    public func peripheralManager(_ peripheral: CBPeripheralManager, central: CBCentral, didSubscribeTo characteristic: CBCharacteristic) {
+        print("PeripheralController: Client subscribed to \(characteristic.uuid.uuidString)")
+    }
 }
