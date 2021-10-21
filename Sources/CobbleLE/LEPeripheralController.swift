@@ -131,4 +131,11 @@ public class LEPeripheralController: NSObject, CBPeripheralManagerDelegate {
     public func peripheralManager(_ peripheral: CBPeripheralManager, central: CBCentral, didSubscribeTo characteristic: CBCharacteristic) {
         print("PeripheralController: Client subscribed to \(characteristic.uuid.uuidString)")
     }
+    
+    public func respond(to: CBATTRequest, withResult: CBATTError.Code, data: Data? = nil) {
+        if data != nil {
+            to.value = data
+        }
+        peripheralManager.respond(to: to, withResult: withResult)
+    }
 }
