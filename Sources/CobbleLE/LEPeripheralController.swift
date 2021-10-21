@@ -24,11 +24,18 @@ public class LEPeripheralController: NSObject, CBPeripheralManagerDelegate {
     private var characteristicWriteCallbacks = Dictionary<CBUUID, ([CBATTRequest])->()>()
     private let characteristicWriteCBSemaphore = DispatchSemaphore(value: 1)
     
+    private var characteristicSubscribeCallbacks = Dictionary<CBUUID, (CBCentral)->()>()
+    private let characteristicSubscribeCBSemaphore = DispatchSemaphore(value: 1)
+    
     private let characteristicUpdateSemaphore = DispatchSemaphore(value: 1)
     
     public var ready: Bool { return peripheralManager.state == .poweredOn }
     private let readyGroup = DispatchGroup()
     private var waitingForReady = false
+    
+    private var pendingUpdateValue: Data?
+    private var pendingUpdateChar: CBMutableCharacteristic?
+    private var pendingUpdateCB: (()->())?
     
     public override init() {
         waitingForReady = true
@@ -114,13 +121,39 @@ public class LEPeripheralController: NSObject, CBPeripheralManagerDelegate {
             self.characteristicReadCBSemaphore.signal()
         }
     }
+    public func setCharacteristicCallback(uuid: CBUUID, onSubscribe: @escaping (CBCentral)->()) {
+        queue.async {
+            self.characteristicSubscribeCBSemaphore.wait()
+            self.characteristicSubscribeCallbacks[uuid] = onSubscribe
+            self.characteristicSubscribeCBSemaphore.signal()
+        }
+    }
+    
+    public func peripheralManagerIsReady(toUpdateSubscribers peripheral: CBPeripheralManager) {
+        ioWriteQueue.async {
+            if self.pendingUpdateValue != nil, self.pendingUpdateCB != nil, self.pendingUpdateChar != nil {
+                self.peripheralManager.updateValue(self.pendingUpdateValue!, for: self.pendingUpdateChar!, onSubscribedCentrals: nil)
+                self.pendingUpdateChar = nil
+                self.pendingUpdateValue = nil
+                self.characteristicUpdateSemaphore.signal()
+                self.pendingUpdateCB!()
+                self.pendingUpdateCB = nil
+            }
+            
+        }
+    }
     
     public func updateValue(value: Data, forChar: CBMutableCharacteristic, onUpdate: @escaping ()->()) {
         ioWriteQueue.async {
             self.characteristicUpdateSemaphore.wait()
-            self.peripheralManager.updateValue(value, for: forChar, onSubscribedCentrals: nil)
-            self.characteristicUpdateSemaphore.signal()
-            onUpdate()
+            if !self.peripheralManager.updateValue(value, for: forChar, onSubscribedCentrals: nil) {
+                self.pendingUpdateValue = value
+                self.pendingUpdateCB = onUpdate
+                self.pendingUpdateChar = forChar
+            }else {
+                self.characteristicUpdateSemaphore.signal()
+                onUpdate()
+            }
         }
     }
     
@@ -129,7 +162,12 @@ public class LEPeripheralController: NSObject, CBPeripheralManagerDelegate {
     }
     
     public func peripheralManager(_ peripheral: CBPeripheralManager, central: CBCentral, didSubscribeTo characteristic: CBCharacteristic) {
-        print("PeripheralController: Client subscribed to \(characteristic.uuid.uuidString)")
+        queue.async {
+            self.characteristicSubscribeCBSemaphore.wait()
+            let cb = self.characteristicSubscribeCallbacks[characteristic.uuid]
+            self.characteristicSubscribeCBSemaphore.signal()
+            cb?(central)
+        }
     }
     
     public func respond(to: CBATTRequest, withResult: CBATTError.Code, data: Data? = nil) {
