@@ -10,7 +10,7 @@ import CoreBluetooth
 
 public class LECentralController: NSObject, CBCentralManagerDelegate {
     public var centralManager: CBCentralManager
-    private let queue = DispatchQueue.global(qos: .utility)
+    private let queue = DispatchQueue(label: "LECentralControllerQueue", qos: .utility)
     
     private var discoveryCallback: ((CBPeripheral, Int, [UInt8]?) -> ())?
     public var ancsUpdateCallback: ((CBPeripheral) -> ())?

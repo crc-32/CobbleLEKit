@@ -11,9 +11,9 @@ import CoreBluetooth
 public class LEPeripheralController: NSObject, CBPeripheralManagerDelegate {
     private var peripheralManager: CBPeripheralManager
     
-    private let queue = DispatchQueue.global(qos: .utility)
-    private let ioReadQueue = DispatchQueue.global(qos: .userInitiated)
-    private let ioWriteQueue = DispatchQueue.global(qos: .userInitiated)
+    private let queue = DispatchQueue(label: "LEPeripheralControllerUtil", qos: .utility)
+    private let ioReadQueue = DispatchQueue(label: "LEPeripheralControllerIORead", qos: .userInitiated)
+    private let ioWriteQueue = DispatchQueue(label: "LEPeripheralControllerIOWrite", qos: .userInitiated)
     
     private var pendingServices = Dictionary<CBUUID, (Error?)->()>()
     private let pendingServicesSemaphore = DispatchSemaphore(value: 1)
