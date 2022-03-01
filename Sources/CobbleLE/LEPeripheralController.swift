@@ -33,7 +33,7 @@ public class LEPeripheralController: NSObject, CBPeripheralManagerDelegate {
     private let readyGroup = DispatchGroup()
     private var waitingForReady = false
     
-    private var pendingUpdates: [PendingUpdate]
+    private var pendingUpdates: [PendingUpdate] = []
     
     private class PendingUpdate {
         let value: Data
